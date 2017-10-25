@@ -42,10 +42,114 @@
 
 import java.util.Scanner;
 import java.io.File;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+
+class Edge implements Comparable<Edge> {
+	public Node source;
+	public Node destination;
+	public int weight;
+
+	public Edge(Node src, Node dest, int x) {
+		weight = x;
+		source = src;
+		destination = dest;
+	}
+
+	public boolean has(Node x) {
+		if (this.source == x || this.destination == x) {
+			return true;
+		} else {
+	  		return false;
+		}
+	}
+
+	public int compareTo(Edge e) {
+		return Integer.compare(this.weight, e.weight);
+	}
+}
+
+class Node {
+	public ArrayList<Edge> edges;
+	public int value;
+	public UnionFind uf;
+
+	public Node(int x) {
+		value = x;
+		edges = new ArrayList<Edge>();
+	}
+}
+
+class UnionFind{
+	public UnionFind parent;
+	public Node key;
+	public int rank;
+
+	public UnionFind(Node x) {
+		parent = this;
+		key = x;
+		rank = 0;
+	}
+
+
+	public static UnionFind makeSet(Node x) {
+		return new UnionFind(x);
+	}
+
+	public UnionFind find() {
+		UnionFind current = this;
+
+		if (current.parent == current) {
+			return current;
+		} else {
+			return current.parent.find(current); 
+		}
+	}
+  
+	public UnionFind find(UnionFind last) {
+		UnionFind current = this;
+		last.parent = current.parent;
+
+		if (current.parent == current) {
+			return current;
+		} else {
+			return current.parent.find(current);
+		}
+	}
+
+	public UnionFind union(UnionFind other) {
+		UnionFind larger;
+		UnionFind smaller;
+		UnionFind x;
+		UnionFind y;
+
+		// Union top nodes
+		x = this.find(); 
+		y = other.find(); 
+
+		if (x.rank > y.rank) {
+			larger = x;
+	    	smaller = y;
+		} else {
+			smaller = y;
+			larger = x;
+		}
+
+		// Link the smaller node to the larger node.
+		smaller.parent = larger;
+
+		if (smaller.rank > larger.rank) {
+			larger.rank = smaller.rank + 1;
+		} else if (smaller.rank == larger.rank) {
+			larger.rank += 1;
+		} else {
+			// Do nothing.
+		}
+		return larger;
+	}
+}
 
 public class MST {
-
 
     /* mst(G)
        Given an adjacency matrix for graph G, return the total weight
@@ -63,9 +167,12 @@ public class MST {
 		/* (You may add extra functions if necessary) */
 			
 		/* ... Your code here ... */
-		
-			
-			
+
+		// Initialize
+		Node[] T = new Node[numVerts];
+		UnionFind[] U = new UnionFind[numVerts];
+		ArrayList<Edge> E = new ArrayList<Edge>();
+
 		/* Add the weight of each edge in the minimum spanning tree
 		   to totalWeight, which will store the total weight of the tree.
 		*/
@@ -74,7 +181,6 @@ public class MST {
 		
 		return totalWeight;
     }
-
 
     public static void main(String[] args) {
 		/* Code to test your implementation */
