@@ -44,6 +44,7 @@ import java.util.Scanner;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 
 class Edge implements Comparable<Edge> {
 	public Node source;
@@ -173,14 +174,14 @@ public class MST {
 		UnionFind[] unionFind = new UnionFind[numVerts];
 		ArrayList<Edge> edges = new ArrayList<Edge>();
 
-		// Make new nodes
+		// Make up a list of nodes
 		for (int i = 0; i < numVerts; i++) {
 			node[i] = new Node(i);
 			unionFind[i] = UnionFind.makeSet(node[i]);
 			node[i].uf = unionFind[i];
 		}
 
-		// Append to the list of edges
+		// Make up list of edges
 		for (int i = 0; i < numVerts - 1; i++) {
 			for (int j = i + 1; j < numVerts; j++) {
 				if (G[i][j] > 0) {
@@ -191,12 +192,28 @@ public class MST {
 			} 
 		}
 
+		ArrayList<Edge> mst = new ArrayList<Edge>();
+		Collections.sort(edges);
+		
+		for (Edge edge: edges) {
+			if (!edge.source.uf.find().equals(edge.destination.uf.find())) {
+				mst.add(edge);
+				edge.source.uf.union(edge.destination.uf);
+				edge.source.uf.union(edge.source.uf);
+			} else {
+				// Do nothing
+			}
+		}
 
 		/* Add the weight of each edge in the minimum spanning tree
 		   to totalWeight, which will store the total weight of the tree.
 		*/
 		int totalWeight = 0;
-		/* ... Your code here ... */
+		
+		// Add em up!
+		for (Edge edge : mst) {
+	    	totalWeight += edge.weight;
+	    }
 		
 		return totalWeight;
     }
