@@ -135,7 +135,7 @@ class UnionFind{
 			larger = x;
 		}
 
-		// Link the smaller node to the larger node.
+		// Link the smaller node to the larger node
 		smaller.parent = larger;
 
 		if (smaller.rank > larger.rank) {
@@ -143,7 +143,7 @@ class UnionFind{
 		} else if (smaller.rank == larger.rank) {
 			larger.rank += 1;
 		} else {
-			// Do nothing.
+			// Do nothing
 		}
 		return larger;
 	}
@@ -169,9 +169,28 @@ public class MST {
 		/* ... Your code here ... */
 
 		// Initialize
-		Node[] T = new Node[numVerts];
-		UnionFind[] U = new UnionFind[numVerts];
-		ArrayList<Edge> E = new ArrayList<Edge>();
+		Node[] node = new Node[numVerts];
+		UnionFind[] unionFind = new UnionFind[numVerts];
+		ArrayList<Edge> edges = new ArrayList<Edge>();
+
+		// Make new nodes
+		for (int i = 0; i < numVerts; i++) {
+			node[i] = new Node(i);
+			unionFind[i] = UnionFind.makeSet(node[i]);
+			node[i].uf = unionFind[i];
+		}
+
+		// Append to the list of edges
+		for (int i = 0; i < numVerts - 1; i++) {
+			for (int j = i + 1; j < numVerts; j++) {
+				if (G[i][j] > 0) {
+					// Add the new edge to edges
+					Edge edge = new Edge(node[i], node[j], G[i][j]);
+					edges.add(edge);
+				}
+			} 
+		}
+
 
 		/* Add the weight of each edge in the minimum spanning tree
 		   to totalWeight, which will store the total weight of the tree.
